@@ -18,11 +18,22 @@ loadEnv({ path: path.join(root, '.env') });
 process.chdir(root);
 await loadPrinterSettings();
 const port = Number(process.env.PORT || 4173);
-const publicOrigin = process.env.PUBLIC_ORIGIN ? new URL(process.env.PUBLIC_ORIGIN).origin : '';
+let publicOrigin = process.env.PUBLIC_ORIGIN ? new URL(process.env.PUBLIC_ORIGIN).origin : '';
 const access = () => { const c=printerConfig(); return createAccess(c.serial && c.token ? `${c.serial}:${c.token}` : ''); };
 if (publicOrigin && !access().required) throw new Error('首次公开部署前，请在本地 .env 填写打印机 SN 和访问码');
-const allowedOrigins = [`http://127.0.0.1:${port}`, `http://localhost:${port}`, ...(publicOrigin ? [publicOrigin] : [])];
-const allowedHosts = allowedOrigins.map(origin => new URL(origin).host);
+const localOrigins = [`http://127.0.0.1:${port}`, `http://localhost:${port}`];
+let allowedOrigins = [...localOrigins, ...(publicOrigin ? [publicOrigin] : [])];
+let allowedHosts = allowedOrigins.map(origin => new URL(origin).host);
+async function refreshPublicOrigin() {
+  try {
+    const saved = JSON.parse(await fs.readFile(process.env.PUBLIC_ACCESS_FILE || path.join(dataDir,'public-access.json'),'utf8'));
+    if (!/^https:\/\/[a-z0-9-]+\.trycloudflare\.com$/.test(saved.url || '') || saved.url === publicOrigin) return;
+    if (!access().required) throw new Error('公网连接需要先配置打印机 SN 和访问码');
+    publicOrigin = saved.url;
+    allowedOrigins = [...localOrigins, publicOrigin];
+    allowedHosts = allowedOrigins.map(origin => new URL(origin).host);
+  } catch (error) { if (error.code !== 'ENOENT' && !(error instanceof SyntaxError)) throw error; }
+}
 const mode = process.env.PRINTER_MODE || 'real';
 const state = { mode, printer: { connected: false, model: printerConfig().model, host: printerConfig().host }, job: null, confirmation: null };
 const journal = process.env.JOB_JOURNAL_PATH || path.join(dataDir, 'job.json');
@@ -97,6 +108,7 @@ const server = http.createServer(async (req, res) => {
     res.setHeader('x-content-type-options', 'nosniff');
     res.setHeader('referrer-policy', 'no-referrer');
     res.setHeader('x-frame-options', 'DENY');
+    await refreshPublicOrigin();
     if (!allowedHosts.includes(req.headers.host)) return json(res, 403, { error: '访问域名未配置' });
     if (mutation && req.headers.origin && !allowedOrigins.includes(req.headers.origin)) return json(res, 403, { error: '请求来源不匹配' });
     const url = new URL(req.url || '/', `http://127.0.0.1:${port}`);

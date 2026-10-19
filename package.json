@@ -15,7 +15,8 @@
     "prepare:all": "node scripts/prepare-all.js",
     "prepare:previews": "node scripts/prepare-previews.js",
     "start": "cross-env NODE_ENV=production node src/local-server.js",
-    "tunnel": "node scripts/start-tunnel.js"
+    "tunnel": "node scripts/start-tunnel.js",
+    "service": "node scripts/service.js"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0",

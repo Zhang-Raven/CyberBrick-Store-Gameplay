@@ -14,3 +14,6 @@ data/printer-settings.json
 data/printer-settings.json.*.tmp
 data/public-access.json
 fakebambu-data/
+
+data/public-access.json.tmp
+data/service.pid
