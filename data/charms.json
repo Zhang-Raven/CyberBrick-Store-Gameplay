@@ -1,0 +1,72 @@
+{
+  "贪狼": {
+    "file": "charms/b51767ce-0bf4-4cd6-bfed-3a59a21e5441.gcode.3mf",
+    "plateIndex": 1,
+    "useAms": true,
+    "amsSlots": [
+      0,
+      3
+    ],
+    "updatedAt": "2026-10-08T03:50:37.624Z"
+  },
+  "禄存": {
+    "file": "charms/2fdd8ffd-9177-4a92-9f2d-193db80fefa8.gcode.3mf",
+    "plateIndex": 2,
+    "useAms": true,
+    "amsSlots": [
+      0,
+      3
+    ],
+    "updatedAt": "2026-10-08T03:50:39.659Z"
+  },
+  "巨门": {
+    "file": "charms/8cc0ff66-9ecd-4b41-b38b-96d65207ad14.gcode.3mf",
+    "plateIndex": 3,
+    "useAms": true,
+    "amsSlots": [
+      0,
+      3
+    ],
+    "updatedAt": "2026-10-08T03:50:41.903Z"
+  },
+  "廉贞": {
+    "file": "charms/3538d9dd-40ff-4664-8efb-75429c2d5b0c.gcode.3mf",
+    "plateIndex": 4,
+    "useAms": true,
+    "amsSlots": [
+      0,
+      3
+    ],
+    "updatedAt": "2026-10-08T03:50:44.349Z"
+  },
+  "武曲": {
+    "file": "charms/57fb5007-84c0-4d73-80f6-5b82c1184075.gcode.3mf",
+    "plateIndex": 5,
+    "useAms": true,
+    "amsSlots": [
+      0,
+      3
+    ],
+    "updatedAt": "2026-10-08T03:50:47.244Z"
+  },
+  "破军": {
+    "file": "charms/8f30d0fb-5b7f-49d3-b7ae-2c5d60d48543.gcode.3mf",
+    "plateIndex": 6,
+    "useAms": true,
+    "amsSlots": [
+      0,
+      3
+    ],
+    "updatedAt": "2026-10-08T03:50:49.113Z"
+  },
+  "辅星": {
+    "file": "charms/3e3d2edc-7b6c-44f9-b161-285abed41d24.gcode.3mf",
+    "plateIndex": 7,
+    "useAms": true,
+    "amsSlots": [
+      0,
+      3
+    ],
+    "updatedAt": "2026-10-08T03:50:51.080Z"
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "name": "blessing-agent",
+  "version": "2.0.0",
+  "type": "module",
+  "main": "src/agent.js",
+  "scripts": {
+    "test": "node --test",
+    "dev": "node src/local-server.js",
+    "dev:sim": "cross-env PRINTER_MODE=simulation node src/local-server.js",
+    "build": "vite build web",
+    "build:native": "node scripts/build-native.js",
+    "prepare:source": "node scripts/prepare-source.js",
+    "fix:x2d-template": "node scripts/fix-x2d-template.js",
+    "postinstall": "node scripts/patch-mcp.js",
+    "prepare:all": "node scripts/prepare-all.js",
+    "prepare:previews": "node scripts/prepare-previews.js",
+    "start": "cross-env NODE_ENV=production node src/local-server.js",
+    "tunnel": "node scripts/start-tunnel.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.30.0",
+    "bambu-printer-mcp": "1.1.25",
+    "dotenv": "^16.4.7",
+    "jszip": "^3.10.2",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "xml2js": "^0.6.2",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3",
+    "vite": "^6.1.0"
+  }
+}

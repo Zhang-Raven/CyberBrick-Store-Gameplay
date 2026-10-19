@@ -1,0 +1,16 @@
+node_modules/
+.env
+.env.*
+!.env.example
+web/dist/
+data/native/
+data/prepared/
+data/job.json
+data/job.json.tmp
+*.log
+.DS_Store
+
+data/printer-settings.json
+data/printer-settings.json.*.tmp
+data/public-access.json
+fakebambu-data/
