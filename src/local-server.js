@@ -143,7 +143,7 @@ const server = http.createServer(async (req, res) => {
       return json(res,200,{connected:state.printer.connected,printer:state.printer,message:state.printer.connected?'已连接真实打印机':'连接失败：请确认本地服务电脑与打印机在同一局域网，并核对 IP、完整 SN、访问码和开发者模式'});
     }
     if (url.pathname === '/api/status') {
-      await refreshPrinter();
+      if (state.printer.connected || state.job?.status === 'running') await refreshPrinter();
       let charms = [], catalogError;
       try { charms = await readCharmPlates(); } catch (error) { catalogError = safeError(error); }
       return json(res, 200, { ...state, charms, catalogError, assets: await readManifest(), runtime: await runtimeStatus() });
