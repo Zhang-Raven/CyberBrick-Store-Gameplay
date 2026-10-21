@@ -3,7 +3,8 @@ import { fileURLToPath } from "node:url";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 import { chooseCharm } from "./catalog.js";
-import { currentDateInChina, getDailyFortune } from "./fortune.js";
+import { currentDateInChina, getDailyFortune, getPersonalityFortune } from "./fortune.js";
+import { validatePersonality } from "./personality.js";
 
 const root = path.dirname(fileURLToPath(import.meta.url));
 const projectPath = process.env.CHARM_PROJECT_3MF || "F:/chrome downloads/九辰灯符（上传版）.3mf";
@@ -28,14 +29,17 @@ function createLocalMcpClient({ serverPath, name, env = process.env }) {
   return { client, transport };
 }
 
-export async function runAgent({ birthYear, birthMonth, mode = process.env.PRINTER_MODE || "simulation", fortuneProvider = getDailyFortune, date = currentDateInChina(), onProgress = () => {}, simulatorPollIntervalMs = 2000 }) {
-  validateBirthMonth(birthYear, birthMonth);
+export async function runAgent({ personality, birthYear, birthMonth, mode = process.env.PRINTER_MODE || "simulation", fortuneProvider, date = currentDateInChina(), onProgress = () => {}, simulatorPollIntervalMs = 2000 }) {
+  const hasPersonality = personality !== undefined && personality !== null && personality !== "";
+  if (hasPersonality) validatePersonality(personality);
+  else validateBirthMonth(birthYear, birthMonth);
+  const provider = fortuneProvider || (hasPersonality ? getPersonalityFortune : getDailyFortune);
   if (mode === "real") {
     const { runRealAgent } = await import("./real-agent.js");
-    return runRealAgent({ birthYear, birthMonth, fortuneProvider, date, onProgress });
+    return runRealAgent({ personality, birthYear, birthMonth, fortuneProvider: provider, date, onProgress });
   }
   onProgress({ stage: "fortune", status: "running", message: "正在分析今日运势" });
-  const fortune = await fortuneProvider({ birthYear, birthMonth, date });
+  const fortune = await provider(hasPersonality ? { personality, date } : { birthYear, birthMonth, date });
   const selection = chooseCharm(fortune);
   onProgress({ stage: "selection", status: "running", message: `今日主题匹配：${selection.charm}`, fortune, selection });
 

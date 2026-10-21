@@ -66,8 +66,8 @@ export async function prepareCharm(charm, callTool = callPrinterTool, { forceSli
   await fs.writeFile(filePath, buffer);
   return { name: charm.name, filePath, ...chosen, useAms: true, amsSlots: [0, 3] };
 }
-export async function runRealAgent({ birthYear, birthMonth, fortuneProvider, date, onProgress, callTool = callPrinterTool, prepare = prepareCharm, monitor = monitorPrint }) {
-  const fortune = await fortuneProvider({ birthYear, birthMonth, date });
+export async function runRealAgent({ personality, birthYear, birthMonth, fortuneProvider, date, onProgress, callTool = callPrinterTool, prepare = prepareCharm, monitor = monitorPrint }) {
+  const fortune = await fortuneProvider(personality ? { personality, date } : { birthYear, birthMonth, date });
   const selection = chooseCharm(fortune);
   const base = { mode: 'real-bambu-mcp', fortune, selection };
   const emit = async event => onProgress({ ...base, ...event });

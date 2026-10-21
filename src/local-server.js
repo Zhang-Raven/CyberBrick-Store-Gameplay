@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { config as loadEnv } from 'dotenv';
 import { createServer as createViteServer } from 'vite';
 import { runAgent, validateBirthMonth } from './agent.js';
+import { validatePersonality } from './personality.js';
 import { callPrinterTool, closePrinterMcp, printerConfig, setConfirmationHandler } from './printer-mcp.js';
 import { readManifest, registerCharm, resolveCharm, dataDir } from './charm-assets.js';
 import { readCharmPlates } from './source-catalog.js';
@@ -194,8 +195,11 @@ const server = http.createServer(async (req, res) => {
       if (state.job && ['running', 'attention'].includes(state.job.status)) return json(res, 409, { error: '当前任务尚未结束，请勿重复提交' });
       if (!req.headers['content-type']?.startsWith('application/json')) return json(res, 415, { error: '请使用 JSON 请求' });
       const input = JSON.parse((await readBody(req)).toString());
+      const personality = String(input.personality || input.mbti || '').trim().toUpperCase();
+      const hasPersonality = Boolean(personality);
+      if (hasPersonality) validatePersonality(personality);
       const birthYear = Number(input.birthYear), birthMonth = Number(input.birthMonth);
-      validateBirthMonth(birthYear, birthMonth);
+      if (!hasPersonality) validateBirthMonth(birthYear, birthMonth);
       // Validate files and runtime before any model call or print submission.
       await readCharmPlates();
       if (mode === 'real') {
@@ -207,7 +211,7 @@ const server = http.createServer(async (req, res) => {
       state.job = null;
       await recordJob({ stage: 'fortune', status: 'running', message: '正在分析今日运势' });
       json(res, 202, { job: state.job });
-      runAgent({ birthYear, birthMonth, mode, onProgress: event => recordJob(event) })
+      runAgent({ personality: hasPersonality ? personality : undefined, birthYear, birthMonth, mode, onProgress: event => recordJob(event) })
         .catch(async error => {
           if (state.job?.confirmationDeclined) {
             await recordJob({ stage: 'cancelled', status: 'cancelled', message: '已取消本次打印，设备未收到打印命令', error: null });

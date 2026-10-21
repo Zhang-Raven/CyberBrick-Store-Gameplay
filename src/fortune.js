@@ -1,4 +1,5 @@
 import { CHARM_RULES } from "./catalog.js";
+import { personalityScores, validatePersonality } from "./personality.js";
 
 const CATEGORIES = Object.keys(CHARM_RULES);
 const MODEL_BASE_URL = "https://open.bigmodel.cn/api/coding/paas/v4";
@@ -80,6 +81,19 @@ export async function getDailyFortune({ birthYear, birthMonth, date }) {
     throw new Error("兼容模型未按 JSON 格式返回运势结果");
   }
   return normalizeModelFortune(fortune, `${baseUrl} (${model})`);
+}
+
+export async function getPersonalityFortune({ personality, date }) {
+  const value = validatePersonality(personality);
+  const { scores, category } = personalityScores(value);
+  return {
+    category,
+    scores,
+    summary: `${value} 的今日灯符：把你的${category === 'communication' ? '表达力' : category === 'career' ? '行动力' : category === 'relationship' ? '共情力' : category === 'resilience' ? '韧性' : '专注力'}，变成看得见的好运。`,
+    source: '九辰人格测试',
+    personality: value,
+    date,
+  };
 }
 
 export function currentDateInChina() {
